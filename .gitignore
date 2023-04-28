@@ -1,3 +1,6 @@
+#Custom
+src/test/resources/bin/
+
 #Maven
 target/
 pom.xml.tag
