@@ -1,7 +1,7 @@
 package com.bongladesch.service;
 
-import java.io.InputStream;
+import java.io.File;
 
-public record FileDataDTO(String name, String mimeType, InputStream fileStream) {
+public record FileDataDTO(String name, String mimeType, File file) {
 
 }

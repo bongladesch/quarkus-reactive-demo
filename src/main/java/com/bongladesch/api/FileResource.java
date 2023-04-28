@@ -3,6 +3,7 @@ package com.bongladesch.api;
 import com.bongladesch.api.json.FileMetaDataJSON;
 import com.bongladesch.service.FileDataDTO;
 import com.bongladesch.service.FileService;
+import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
@@ -12,11 +13,10 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.util.Objects;
 import org.jboss.resteasy.reactive.PartType;
 import org.jboss.resteasy.reactive.RestForm;
+import org.jboss.resteasy.reactive.RestStreamElementType;
 import org.jboss.resteasy.reactive.multipart.FileUpload;
 
 @Path("/api/files")
@@ -28,12 +28,21 @@ public class FileResource {
   @POST
   @Path("/upload")
   public Uni<Response> upload(@RestForm("file") FileUpload fileUpload,
-      @RestForm("metaData") @PartType(MediaType.APPLICATION_JSON) FileMetaDataJSON fileMetaDataJSON)
-      throws FileNotFoundException {
+      @RestForm("metaData") @PartType(MediaType.APPLICATION_JSON) FileMetaDataJSON fileMetaDataJSON) {
     return fileService.uploadFile(
             new FileDataDTO(fileMetaDataJSON.name(), fileMetaDataJSON.mimeType(),
-                new FileInputStream(fileUpload.uploadedFile().toFile()))).onItem()
+                fileUpload.uploadedFile().toFile())).onItem()
         .transform(item -> Response.ok(item).status(201).build());
+  }
+
+  @POST
+  @Path("/upload/progress")
+  @RestStreamElementType(MediaType.TEXT_PLAIN)
+  public Multi<String> uploadWithProgress(@RestForm("file") FileUpload fileUpload,
+      @RestForm("metaData") @PartType(MediaType.APPLICATION_JSON) FileMetaDataJSON fileMetaDataJSON) {
+    return fileService.uploadFileWithProgress(
+        new FileDataDTO(fileMetaDataJSON.name(), fileMetaDataJSON.mimeType(),
+            fileUpload.uploadedFile().toFile()));
   }
 
   @GET
