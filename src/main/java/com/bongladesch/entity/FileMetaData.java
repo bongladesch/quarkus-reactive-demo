@@ -2,6 +2,7 @@ package com.bongladesch.entity;
 
 import io.quarkus.hibernate.reactive.panache.PanacheEntityBase;
 import io.smallrye.mutiny.Uni;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import java.util.List;
@@ -11,9 +12,9 @@ public class FileMetaData extends PanacheEntityBase {
 
   @Id
   public String id;
+  @Column(unique = true)
   public String name;
   public String mimeType;
-
 
   public Uni<FileMetaData> persistFile() {
     return persistAndFlush();

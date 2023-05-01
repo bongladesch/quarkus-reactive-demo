@@ -11,4 +11,6 @@ public interface StorageService {
   Multi<Double> uploadFileWithProgress(String objectId, File file, String mimeType);
 
   InputStream downloadFile(String objectId);
+
+  void deleteFile(String objectId);
 }

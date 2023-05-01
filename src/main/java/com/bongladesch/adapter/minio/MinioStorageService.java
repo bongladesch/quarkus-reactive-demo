@@ -8,6 +8,7 @@ import io.minio.GetObjectArgs;
 import io.minio.MakeBucketArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
+import io.minio.RemoveObjectArgs;
 import io.minio.errors.MinioException;
 import io.smallrye.mutiny.Multi;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -78,6 +79,16 @@ public class MinioStorageService implements StorageService {
     try {
       return minioClient.getObject(
           GetObjectArgs.builder().bucket(BUCKET_NAME).object(objectId).build());
+    } catch (MinioException | InvalidKeyException | IOException | NoSuchAlgorithmException e) {
+      throw new ObjectStoreException(e.getMessage());
+    }
+  }
+
+  @Override
+  public void deleteFile(String objectId) {
+    try {
+      minioClient.removeObject(
+          RemoveObjectArgs.builder().bucket(BUCKET_NAME).object(objectId).build());
     } catch (MinioException | InvalidKeyException | IOException | NoSuchAlgorithmException e) {
       throw new ObjectStoreException(e.getMessage());
     }
